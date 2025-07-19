@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Iyzico → E-Arşiv</title>
+  <style>
+    body { width:320px; padding:10px; font-family:Arial,sans-serif; }
+    button, select, input { width:100%; margin-top:8px; }
+    #customerData { 
+      margin-top:10px; 
+      padding:8px; 
+      background:#f5f5f5; 
+      border-radius:4px; 
+      font-size:12px; 
+      display:none; 
+    }
+    .data-row { margin:2px 0; }
+    .label { font-weight:bold; color:#333; }
+    .value { color:#666; }
+    .danger-button { 
+      background-color: #dc3545; 
+      color: white; 
+      border: none; 
+      padding: 8px; 
+      border-radius: 4px; 
+      cursor: pointer; 
+    }
+    .danger-button:hover { 
+      background-color: #c82333; 
+    }
+    .settings-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .settings-button:hover {
+      background-color: #0056b3;
+    }
+    #settingsPanel {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      border: 1px solid #dee2e6;
+    }
+    .form-group {
+      margin-bottom: 10px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 3px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 5px;
+      border: 1px solid #ced4da;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+    }
+    .checkbox-group label {
+      margin-bottom: 0;
+      font-weight: normal;
+    }
+    .button-group {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .button-group button {
+      flex: 1;
+      padding: 6px;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <button id="detect">Müşteri Algıla</button>
+  <div id="customerData"></div>
+  <button id="save">Yeni Müşteri Kaydet</button>
+  
+  <div style="margin-top: 10px;">
+    <input type="text" id="customerSearch" placeholder="Müşteri ara..." style="margin-bottom: 5px;">
+    <select id="customerList">
+      <option value="" disabled selected>-- Müşteri Seç --</option>
+    </select>
+  </div>
+  
+  <button id="fill">Seçili Müşteriyi Doldur</button>
+  <button id="delete" class="danger-button">Seçili Müşteriyi Sil</button>
+  <button id="settings" class="settings-button">Ayarlar</button>
+  
+  <div id="settingsPanel">
+    <div class="form-group">
+      <label>Hizmet Adı:</label>
+      <input type="text" id="defaultService" placeholder="Örn: Web Tasarım Hizmeti">
+    </div>
+    <div class="form-group">
+      <label>Varsayılan Miktar:</label>
+      <input type="number" id="defaultQuantity" value="1" min="0" step="0.01">
+    </div>
+    <div class="form-group">
+      <label>Birim:</label>
+      <select id="defaultUnit">
+        <option value="">-----</option>
+        <option value="DAY">Gün</option>
+        <option value="MON">Ay</option>
+        <option value="ANN">Yıl</option>
+        <option value="HUR">Saat</option>
+        <option value="D61">Dakika</option>
+        <option value="D62">Saniye</option>
+        <option value="C62" selected>Adet</option>
+        <option value="PA">Paket</option>
+        <option value="BX">Kutu</option>
+        <option value="MGM">mg</option>
+        <option value="GRM">g</option>
+        <option value="KGM">kg</option>
+        <option value="LTR">lt</option>
+        <option value="TNE">ton</option>
+        <option value="NT">Net Ton</option>
+        <option value="GT">Gross ton</option>
+        <option value="MMT">mm</option>
+        <option value="CMT">cm</option>
+        <option value="MTR">m</option>
+        <option value="KTM">km</option>
+        <option value="MLT">ml</option>
+        <option value="MMQ">mm3</option>
+        <option value="CMK">cm2</option>
+        <option value="CMQ">cm3</option>
+        <option value="MTK">m2</option>
+        <option value="MTQ">m3</option>
+        <option value="KJO">kJ</option>
+        <option value="CLT">cl</option>
+        <option value="CT">KARAT</option>
+        <option value="KWH">KWH</option>
+        <option value="MWH">MWH</option>
+        <option value="CCT">Ton baş.taşıma kap.</option>
+        <option value="D30">Brüt kalori</option>
+        <option value="D40">1000 lt</option>
+        <option value="LPA">Saf alkol lt</option>
+        <option value="B32">kg.m2</option>
+        <option value="NCL">Hücre adet</option>
+        <option value="PR">Çift</option>
+        <option value="R9">1000 m3</option>
+        <option value="SET">Set</option>
+        <option value="T3">1000 adet</option>
+        <option value="Q37">SCM</option>
+        <option value="Q39">NCM</option>
+        <option value="J39">mmBTU</option>
+        <option value="G52">CM³</option>
+        <option value="DZN">Düzine</option>
+        <option value="DMK">dm2</option>
+        <option value="DMT">dm</option>
+        <option value="HAR">ha</option>
+        <option value="LM">Metretül (LM)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Varsayılan Ülke:</label>
+      <select id="defaultCountry">
+        <option value="">-----</option>
+        <option value="Türkiye" selected>Türkiye</option>
+        <option value="Abd Minor Outlying A">Abd Minor Outlying A</option>
+        <option value="Abd Virjin Adaları">Abd Virjin Adaları</option>
+        <option value="Afganistan">Afganistan</option>
+        <option value="Almanya">Almanya</option>
+        <option value="Amerika Birleşik Dev">Amerika Birleşik Dev</option>
+        <option value="Amerika Samoasi">Amerika Samoasi</option>
+        <option value="Andorra">Andorra</option>
+        <option value="Angola">Angola</option>
+        <option value="Anguilla">Anguilla</option>
+        <option value="Antartika">Antartika</option>
+        <option value="Antigua Ve Bermuda">Antigua Ve Bermuda</option>
+        <option value="Arjantin">Arjantin</option>
+        <option value="Arnavutluk">Arnavutluk</option>
+        <option value="Aruba">Aruba</option>
+        <option value="Avustralya">Avustralya</option>
+        <option value="Avustralya Okyanusu">Avustralya Okyanusu</option>
+        <option value="Avusturya">Avusturya</option>
+        <option value="Azerbaycan">Azerbaycan</option>
+        <option value="Bahamalar">Bahamalar</option>
+        <option value="Bahreyn">Bahreyn</option>
+        <option value="Bangladeş">Bangladeş</option>
+        <option value="Barbados">Barbados</option>
+        <option value="Belçika">Belçika</option>
+        <option value="Belize">Belize</option>
+        <option value="Benin">Benin</option>
+        <option value="Bermuda">Bermuda</option>
+        <option value="Beyaz Rusya">Beyaz Rusya</option>
+        <option value="Bhutan">Bhutan</option>
+        <option value="Bolivya">Bolivya</option>
+        <option value="Bosna-Hersek">Bosna-Hersek</option>
+        <option value="Bostvana">Bostvana</option>
+        <option value="Bouvet Adası">Bouvet Adası</option>
+        <option value="Brezilya">Brezilya</option>
+        <option value="Brunei">Brunei</option>
+        <option value="Bulgaristan">Bulgaristan</option>
+        <option value="Burkina Faso">Burkina Faso</option>
+        <option value="Burma">Burma</option>
+        <option value="Burundi">Burundi</option>
+        <option value="Birleşik Arap Emirli">Birleşik Arap Emirli</option>
+        <option value="Birleşik Devletler M">Birleşik Devletler M</option>
+        <option value="Birleşik Krallik">Birleşik Krallik</option>
+        <option value="Bismark Archipelago">Bismark Archipelago</option>
+        <option value="Cape Verde">Cape Verde</option>
+        <option value="Cayman Adaları">Cayman Adaları</option>
+        <option value="Cebeli Tarik">Cebeli Tarik</option>
+        <option value="Ceuta Ve Melilla">Ceuta Ve Melilla</option>
+        <option value="Cezayir">Cezayir</option>
+        <option value="Christmas Adaları">Christmas Adaları</option>
+        <option value="Cook Adaları">Cook Adaları</option>
+        <option value="Cibuti">Cibuti</option>
+        <option value="Çad">Çad</option>
+        <option value="Çek Cumhuriyeti">Çek Cumhuriyeti</option>
+        <option value="Çeçen Cumhuriyeti">Çeçen Cumhuriyeti</option>
+        <option value="Çin Halk Cumhuriyeti">Çin Halk Cumhuriyeti</option>
+        <option value="Danimarka">Danimarka</option>
+        <option value="Dağistan Cumhuriyeti">Dağistan Cumhuriyeti</option>
+        <option value="Dominik Cumhuriyeti">Dominik Cumhuriyeti</option>
+        <option value="Dominika">Dominika</option>
+        <option value="Doğu Timor">Doğu Timor</option>
+        <option value="Dubai">Dubai</option>
+        <option value="Ekvator">Ekvator</option>
+        <option value="Ekvator Ginesi">Ekvator Ginesi</option>
+        <option value="El Salvador">El Salvador</option>
+        <option value="Endonezya">Endonezya</option>
+        <option value="Ermenistan">Ermenistan</option>
+        <option value="Eritre">Eritre</option>
+        <option value="Estonya">Estonya</option>
+        <option value="Etiyopya">Etiyopya</option>
+        <option value="Falkland Adaları">Falkland Adaları</option>
+        <option value="Faroe Adaları">Faroe Adaları</option>
+        <option value="Fas">Fas</option>
+        <option value="Fransa">Fransa</option>
+        <option value="Fransiz Guyanasi">Fransiz Guyanasi</option>
+        <option value="Fransiz Güney Toprak">Fransiz Güney Toprak</option>
+        <option value="Fransiz Polinezyasi">Fransiz Polinezyasi</option>
+        <option value="Fiji">Fiji</option>
+        <option value="Fildişi Sahili">Fildişi Sahili</option>
+        <option value="Filipinler">Filipinler</option>
+        <option value="Filistin">Filistin</option>
+        <option value="Finlandiya">Finlandiya</option>
+        <option value="Gabon">Gabon</option>
+        <option value="Gambiya">Gambiya</option>
+        <option value="Gana">Gana</option>
+        <option value="Grenada">Grenada</option>
+        <option value="Grönland">Grönland</option>
+        <option value="Guadelup">Guadelup</option>
+        <option value="Guam">Guam</option>
+        <option value="Guatemala">Guatemala</option>
+        <option value="Guyana">Guyana</option>
+        <option value="Güney Afrika Cumhuri">Güney Afrika Cumhuri</option>
+        <option value="Güney Fransiz Toprak">Güney Fransiz Toprak</option>
+        <option value="Güney Georgia Ve Gün">Güney Georgia Ve Gün</option>
+        <option value="Güney Kore Cumhuriye">Güney Kore Cumhuriye</option>
+        <option value="Güney Sudan">Güney Sudan</option>
+        <option value="Güney Yemen">Güney Yemen</option>
+        <option value="Gürcistan">Gürcistan</option>
+        <option value="Gine">Gine</option>
+        <option value="Gine-Bissau">Gine-Bissau</option>
+        <option value="Haiti">Haiti</option>
+        <option value="Heard Adaları Ve Mc">Heard Adaları Ve Mc</option>
+        <option value="Hirvatistan">Hirvatistan</option>
+        <option value="Hollanda">Hollanda</option>
+        <option value="Hollanda Antilleri">Hollanda Antilleri</option>
+        <option value="Honduras">Honduras</option>
+        <option value="Hong Kong">Hong Kong</option>
+        <option value="Hindistan">Hindistan</option>
+        <option value="Irak">Irak</option>
+        <option value="İngiliz Hint Oky.Top">İngiliz Hint Oky.Top</option>
+        <option value="İngiliz Virgin Adala">İngiliz Virgin Adala</option>
+        <option value="İran">İran</option>
+        <option value="İrlanda">İrlanda</option>
+        <option value="İspanya">İspanya</option>
+        <option value="İsrail">İsrail</option>
+        <option value="İsveç">İsveç</option>
+        <option value="İsviçre">İsviçre</option>
+        <option value="İtalya">İtalya</option>
+        <option value="İzlanda">İzlanda</option>
+        <option value="İşgal Altindaki Fili">İşgal Altindaki Fili</option>
+        <option value="Jamaika">Jamaika</option>
+        <option value="Japonya">Japonya</option>
+        <option value="Kamboçya">Kamboçya</option>
+        <option value="Kamerun">Kamerun</option>
+        <option value="Kanada">Kanada</option>
+        <option value="Karadağ">Karadağ</option>
+        <option value="Katar">Katar</option>
+        <option value="Kazakistan">Kazakistan</option>
+        <option value="Kenya">Kenya</option>
+        <option value="Kibris Rum Kesimi">Kibris Rum Kesimi</option>
+        <option value="Kirgizistan">Kirgizistan</option>
+        <option value="Kokos Adaları">Kokos Adaları</option>
+        <option value="Kolombiya">Kolombiya</option>
+        <option value="Komoro Adaları">Komoro Adaları</option>
+        <option value="Kongo">Kongo</option>
+        <option value="Kosova">Kosova</option>
+        <option value="Kosta Rika">Kosta Rika</option>
+        <option value="Kutup Bölgeleri">Kutup Bölgeleri</option>
+        <option value="Kuveyt">Kuveyt</option>
+        <option value="Kuzey Kibris Türk Cu">Kuzey Kibris Türk Cu</option>
+        <option value="Kuzey Kore Demokrati">Kuzey Kore Demokrati</option>
+        <option value="Kuzey Mariana Adalar">Kuzey Mariana Adalar</option>
+        <option value="Kuzey Yemen">Kuzey Yemen</option>
+        <option value="Kongo (Demokratik Cu)">Kongo (Demokratik Cu)</option>
+        <option value="Küba">Küba</option>
+        <option value="Kiribati">Kiribati</option>
+        <option value="Laos">Laos</option>
+        <option value="Lesotho">Lesotho</option>
+        <option value="Letonya">Letonya</option>
+        <option value="Lieshtenstein">Lieshtenstein</option>
+        <option value="Lübnan">Lübnan</option>
+        <option value="Lüksemburg">Lüksemburg</option>
+        <option value="Liberya">Liberya</option>
+        <option value="Libya">Libya</option>
+        <option value="Litvanya">Litvanya</option>
+        <option value="Macaristan">Macaristan</option>
+        <option value="Madagaskar">Madagaskar</option>
+        <option value="Makao">Makao</option>
+        <option value="Makedonya">Makedonya</option>
+        <option value="Malavi">Malavi</option>
+        <option value="Maldiv Adaları">Maldiv Adaları</option>
+        <option value="Malezya">Malezya</option>
+        <option value="Malta">Malta</option>
+        <option value="Mali">Mali</option>
+        <option value="Marshall Adaları">Marshall Adaları</option>
+        <option value="Martinik">Martinik</option>
+        <option value="Mauritius">Mauritius</option>
+        <option value="Mayotte">Mayotte</option>
+        <option value="Meksika">Meksika</option>
+        <option value="Melilla">Melilla</option>
+        <option value="Misir">Misir</option>
+        <option value="Moldavya">Moldavya</option>
+        <option value="Monaco">Monaco</option>
+        <option value="Montserrat">Montserrat</option>
+        <option value="Moritanya">Moritanya</option>
+        <option value="Mozambik">Mozambik</option>
+        <option value="Moğolistan">Moğolistan</option>
+        <option value="Myanmar">Myanmar</option>
+        <option value="Mikronezya">Mikronezya</option>
+        <option value="Namibya">Namibya</option>
+        <option value="Nauru">Nauru</option>
+        <option value="Nepal">Nepal</option>
+        <option value="Norfolk Adası">Norfolk Adası</option>
+        <option value="Norveç">Norveç</option>
+        <option value="Nijer">Nijer</option>
+        <option value="Nijerya">Nijerya</option>
+        <option value="Nikaragua">Nikaragua</option>
+        <option value="Niue">Niue</option>
+        <option value="Orta Afrika Cumhuriy">Orta Afrika Cumhuriy</option>
+        <option value="Özbekistan">Özbekistan</option>
+        <option value="Pakistan">Pakistan</option>
+        <option value="Palau">Palau</option>
+        <option value="Panama">Panama</option>
+        <option value="Papua Yeni Gine">Papua Yeni Gine</option>
+        <option value="Paraguay">Paraguay</option>
+        <option value="Peru">Peru</option>
+        <option value="Polonya">Polonya</option>
+        <option value="Portekiz">Portekiz</option>
+        <option value="Pitcairn">Pitcairn</option>
+        <option value="Reunion">Reunion</option>
+        <option value="Romanya">Romanya</option>
+        <option value="Ruanda">Ruanda</option>
+        <option value="Rusya Federasyonu">Rusya Federasyonu</option>
+        <option value="San Marino">San Marino</option>
+        <option value="Sao Tome And Princip">Sao Tome And Princip</option>
+        <option value="Senegal">Senegal</option>
+        <option value="Septe(Ceuta)">Septe(Ceuta)</option>
+        <option value="Seyşel Adaları Ve Ba">Seyşel Adaları Ve Ba</option>
+        <option value="Sierra Leone">Sierra Leone</option>
+        <option value="Sirbistan">Sirbistan</option>
+        <option value="Slovakya">Slovakya</option>
+        <option value="Slovenya">Slovenya</option>
+        <option value="Solomon Adaları">Solomon Adaları</option>
+        <option value="Somali">Somali</option>
+        <option value="Sri Lanka">Sri Lanka</option>
+        <option value="St Vincent Ve Grenad">St Vincent Ve Grenad</option>
+        <option value="St. Helena Ve Bağlan">St. Helena Ve Bağlan</option>
+        <option value="St. Kitts Ve Nevis">St. Kitts Ve Nevis</option>
+        <option value="St. Lucia">St. Lucia</option>
+        <option value="St. Pierre Ve Miquel">St. Pierre Ve Miquel</option>
+        <option value="Sudan">Sudan</option>
+        <option value="Surinam">Surinam</option>
+        <option value="Suriye">Suriye</option>
+        <option value="Suudi Arabistan">Suudi Arabistan</option>
+        <option value="Svaziland">Svaziland</option>
+        <option value="Samoa (Batı Samoa)">Samoa (Batı Samoa)</option>
+        <option value="Serbest Bölge (Ba-Bs)">Serbest Bölge (Ba-Bs)</option>
+        <option value="Singapur">Singapur</option>
+        <option value="Şili">Şili</option>
+        <option value="Tacikistan">Tacikistan</option>
+        <option value="Tayland">Tayland</option>
+        <option value="Tayvan">Tayvan</option>
+        <option value="Togo">Togo</option>
+        <option value="Tokelau">Tokelau</option>
+        <option value="Tonga">Tonga</option>
+        <option value="Trinidad Ve Tobago">Trinidad Ve Tobago</option>
+        <option value="Tunus">Tunus</option>
+        <option value="Turks Ve Caicos Adas">Turks Ve Caicos Adas</option>
+        <option value="Tuvalu">Tuvalu</option>
+        <option value="Tanzanya (Birleşik C)">Tanzanya (Birleşik C)</option>
+        <option value="Türkmenistan">Türkmenistan</option>
+        <option value="Uganda">Uganda</option>
+        <option value="Ukrayna">Ukrayna</option>
+        <option value="Umman">Umman</option>
+        <option value="Uruguay">Uruguay</option>
+        <option value="Ürdün">Ürdün</option>
+        <option value="Vanuatu">Vanuatu</option>
+        <option value="Vatikan">Vatikan</option>
+        <option value="Venezuella">Venezuella</option>
+        <option value="Vietnam">Vietnam</option>
+        <option value="Wallis Ve Futuna Ada">Wallis Ve Futuna Ada</option>
+        <option value="Yakutistan">Yakutistan</option>
+        <option value="Yemen">Yemen</option>
+        <option value="Yeni Kalodenya Ve Ba">Yeni Kalodenya Ve Ba</option>
+        <option value="Yeni Zelanda">Yeni Zelanda</option>
+        <option value="Yeni Zelanda Okyanus">Yeni Zelanda Okyanus</option>
+        <option value="Yugoslavya(Eski Yugo)">Yugoslavya(Eski Yugo)</option>
+        <option value="Yugoslavya(Sirbistan)">Yugoslavya(Sirbistan)</option>
+        <option value="Yunanistan">Yunanistan</option>
+        <option value="Zambia">Zambia</option>
+        <option value="Zimbabve">Zimbabve</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>KDV Oranı (%):</label>
+      <select id="defaultVat">
+        <option value="">-----</option>
+        <option value="1">%1</option>
+        <option value="8">%8</option>
+        <option value="10">%10</option>
+        <option value="18" selected>%18</option>
+        <option value="20">%20</option>
+      </select>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="priceIncludesVat">
+      <label for="priceIncludesVat">Fiyat KDV Dahil</label>
+    </div>
+    <div class="button-group">
+      <button id="saveSettings" class="settings-button">Kaydet</button>
+      <button id="cancelSettings" class="danger-button">İptal</button>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Iyzico → E-Arşiv Otomasyon",
+  "version": "1.1",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.iyzico.com/*", "*://iyzico.com/*"],
+      "js": ["content_script.js"]
+    },
+    {
+      "matches": ["*://earsivportal.efatura.gov.tr/*"],
+      "js": ["content_script.js"]
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
